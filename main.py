@@ -15,8 +15,8 @@ import torch.nn as nn
 import time
 torch.manual_seed(0)
 
-# main function for the framework
-def main(dataset, algorithm, model, batch_size, learning_rate, beta, lamda, num_glob_iters,
+
+def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, num_glob_iters,
          local_epochs, optimizer, numusers, K, personal_learning_rate, times, gpu):
 
     # Get device status: Check GPU or CPU
@@ -55,19 +55,19 @@ def main(dataset, algorithm, model, batch_size, learning_rate, beta, lamda, num_
             model = net, model
 
         # initializing, training and testing the model
-        server = RWSADMM(device, dataset, algorithm, model, batch_size, learning_rate, beta, lamda, num_glob_iters, local_epochs, optimizer, numusers, K, personal_learning_rate, i)
+        server = RWSADMM(device, dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, num_glob_iters, local_epochs, optimizer, numusers, K, personal_learning_rate, i)
         server.train()
         server.test()
 
 
     # averaging the results of one/several runs of RWSADMM algorithm
     average_data(num_users=numusers, loc_ep1=local_epochs, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
-                 learning_rate=learning_rate, beta=beta, algorithms="RWSADMM", batch_size=batch_size, dataset=dataset,
+                 beta=beta, kappa=kappa, algorithms="RWSADMM", batch_size=batch_size, dataset=dataset,
                  k=K, personal_learning_rate=personal_learning_rate, times=times)
     # averaging the results of one/several runs of RWSADMM_p algorithm
-    average_data(num_users=numusers, loc_ep1=local_epochs, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
-                 learning_rate=learning_rate, beta=beta, algorithms="RWSADMM_p", batch_size=batch_size, dataset=dataset,
-                 k=K, personal_learning_rate=personal_learning_rate, times=times)
+    # average_data(num_users=numusers, loc_ep1=local_epochs, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
+    #              beta=beta, kappa=kappa, algorithms="RWSADMM_p", batch_size=batch_size, dataset=dataset,
+    #              k=K, personal_learning_rate=personal_learning_rate, times=times)
 
 
     # added by zp
@@ -80,15 +80,16 @@ def main(dataset, algorithm, model, batch_size, learning_rate, beta, lamda, num_
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default="Mnist", choices=["Mnist", "Synthetic", "Cifar10"])
-    parser.add_argument("--model", type=str, default="cnn", choices=["dnn", "mclr", "cnn","resnet"])
+    parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
-    parser.add_argument("--learning_rate", type=float, default=0.01, help="Local learning rate")
-    parser.add_argument("--beta", type=float, default=0.001, help="Average moving parameter for RWSADMM, or Second learning rate of Per-FedAvg")
-    parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
-    parser.add_argument("--num_global_iters", type=int, default=100)
-    parser.add_argument("--local_epochs", type=int, default=2)
+    parser.add_argument("--beta", type=float, default=10, help="Beta parameter for RWSADMM")
+    parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
+    parser.add_argument("--lamda", type=int, default=20, help="Regularization term")
+    parser.add_argument("--num_global_iters", type=int, default=200)
+    parser.add_argument("--local_epochs", type=int, default=3)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
+    parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
     parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
     parser.add_argument("--K", type=int, default=5, help="Computation steps")
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
@@ -100,8 +101,8 @@ if __name__ == "__main__":
     print("Summary of training process:")
     print("Algorithm: {}".format(args.algorithm))
     print("Batch size: {}".format(args.batch_size))
-    print("Learing rate       : {}".format(args.learning_rate))
-    print("Average Moving       : {}".format(args.beta))
+    print("Beta parameter       : {}".format(args.beta))
+    print("Kappa parameter       : {}".format(args.kappa))
     print("Subset of users      : {}".format(args.numusers))
     print("Number of global rounds       : {}".format(args.num_global_iters))
     print("Number of local rounds       : {}".format(args.local_epochs))
@@ -112,10 +113,11 @@ if __name__ == "__main__":
     main(
         dataset=args.dataset,
         algorithm = args.algorithm,
+        markov_rw = args.markov_rw,
         model=args.model,
         batch_size=args.batch_size,
-        learning_rate=args.learning_rate,
-        beta = args.beta, 
+        beta=args.beta,
+        kappa= args.kappa,
         lamda = args.lamda,
         num_glob_iters=args.num_global_iters,
         local_epochs=args.local_epochs,

@@ -1,32 +1,33 @@
 import torch
-import os
-
+import networkx as nx
+import numpy as np
 from FLAlgorithms.users.userRWSADMM import UserRWSADMM
 from FLAlgorithms.servers.serverbase import Server
 from utils.model_utils import read_data, read_user_data
-import numpy as np
-
 import time
 
 # Implementation for RWSADMM Server
 
 class RWSADMM(Server):
-    def __init__(self, device,  dataset, algorithm, model, batch_size, learning_rate, beta, lamda, num_glob_iters,
+    def __init__(self, device, dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, num_glob_iters,
                  local_epochs, optimizer, num_users, K, personal_learning_rate, times):
-        super().__init__(device, dataset,algorithm, model[0], batch_size, learning_rate, beta, lamda, num_glob_iters,
+        super().__init__(device, dataset, algorithm, model[0], batch_size, beta, kappa, lamda, num_glob_iters,
                          local_epochs, optimizer, num_users, times)
 
         # Initialize data for all  users
         data = read_data(dataset)
-        total_users = len(data[0])
+        self.total_users = len(data[0])
         self.K = K
         self.personal_learning_rate = personal_learning_rate
-        for i in range(total_users):
+        self.G = self.graph_users(self.total_users, num_users)
+        self.markov_rw = markov_rw # settings to apply random walk MC or simple random selection
+
+        for i in range(self.total_users):
             id, train , test = read_user_data(i, data, dataset)
-            user = UserRWSADMM(device, id, train, test, model, batch_size, learning_rate, beta, lamda, local_epochs, optimizer, K, personal_learning_rate)
+            user = UserRWSADMM(device, id, train, test, model, batch_size, beta, kappa, lamda, local_epochs, optimizer, K, personal_learning_rate)
             self.users.append(user)
             self.total_train_samples += user.train_samples
-        print("Number of users / total users:",num_users, " / " ,total_users)
+        print("Number of users / total users:",num_users, " / " ,self.total_users)
         print("Finished creating RWSADMM server.")
 
     def send_grads(self):
@@ -59,7 +60,11 @@ class RWSADMM(Server):
 
             # choose several users to send back updated model to server
             # self.personalized_evaluate()
-            self.selected_users = self.select_users(glob_iter,self.num_users)
+            if (self.markov_rw == 1): # applying RW-MC or random selection
+                self.selected_users = self.select_users_markov(glob_iter, self.num_users)
+            else:
+                self.selected_users = self.select_users(glob_iter,self.num_users)
+
 
             # Evaluate global model on user for each iteration
             self.evaluate_personalized_model()
@@ -75,3 +80,28 @@ class RWSADMM(Server):
         #print(loss)
         self.save_results()
         self.save_model()
+
+    def graph_users(self, total_users, num_users):
+        G = nx.Graph()
+        G.add_nodes_from(range(total_users))
+        for node in G.nodes():
+            neighbors = np.random.choice(list(G.nodes()), num_users, replace=False)
+            for neighbor in neighbors:
+                G.add_edge(node, neighbor)
+        return G
+
+    def select_users_markov(self, glob_iter, num_users):
+        # Create transition matrix T
+        T = np.zeros((self.total_users, self.total_users))
+        for i in range(self.total_users):
+            neighbors = list(self.G.neighbors(i))
+            for neighbor in neighbors:
+                T[i][neighbor] = 1/len(neighbors)
+        # perform Markov random walk
+        current_center = np.random.choice(range(self.total_users))
+        for i in range(glob_iter):
+            current_center = np.random.choice(range(self.total_users), p=T[current_center])
+        # select current center and its neighbors as selected users
+        selected_users = list(self.G.neighbors(current_center))
+        selected_users.append(current_center)
+        return (self.users[i] for i in selected_users)
