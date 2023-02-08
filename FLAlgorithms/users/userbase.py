@@ -47,6 +47,11 @@ class User:
 
         self.persionalized_model = copy.deepcopy(list(self.model.parameters()))
         self.persionalized_model_bar = copy.deepcopy(list(self.model.parameters()))
+
+
+        # Added by ZibaP
+        self.train_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
+        self.send_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
     
     def set_parameters(self, model):
         for old_param, new_param, local_param in zip(self.model.parameters(), model.parameters(), self.local_model):

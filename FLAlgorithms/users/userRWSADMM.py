@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from FLAlgorithms.optimizers.fedoptimizer import pFedMeOptimizer
 from FLAlgorithms.users.userbase import User
 import copy
+import time
 
 # Implementation for RWSADMM clients
 
@@ -32,8 +33,8 @@ class UserRWSADMM(User):
                 model_grad.data = new_grads[idx]
 
     def train(self, epochs, num_users):
-        LOSS = 0
         eps = 1e-5
+        start_time = time.time()
         self.model.train()
         for epoch in range(1, self.local_epochs + 1):  # local update
             self.model.train()
@@ -58,7 +59,7 @@ class UserRWSADMM(User):
                     param_z.data = param_z.data + self.kappa*self.beta * (param_x.data - param_y.data - eps)
                     param_y.data = param_y.data + 1 / num_users * (
                             param_x.data - (1/self.beta)*param_z.data - param_x_old.data + (1/self.beta)*param_z_old.data)
-            self.kappa = 0.95 * self.kappa
+            # self.kappa = 0.95 * self.kappa
             persionalized_model_bar = copy.copy(self.local_model_x)
 
             # update local weight after finding approximate theta
@@ -68,4 +69,6 @@ class UserRWSADMM(User):
         #update local model as local_weight_upated
         self.update_parameters(self.local_model_x.parameters())
 
-        return LOSS
+        # recording the training times
+        self.train_time_cost['num_rounds'] += 1
+        self.train_time_cost['total_cost'] += time.time() - start_time

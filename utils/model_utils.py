@@ -255,9 +255,10 @@ def read_data(dataset):
         test_data: dictionary of test data
     '''
 
-    if(dataset == "Cifar10"):
-        clients, groups, train_data, test_data = read_cifar_data()
-        return clients, groups, train_data, test_data
+    # commented by ZibaP, Cifar10 is now read in the same way as Mnist and Synthetic data
+    # if(dataset == "Cifar10"):
+    #     clients, groups, train_data, test_data = read_cifar_data()
+    #     return clients, groups, train_data, test_data
 
     train_data_dir = os.path.join('data',dataset,'data', 'train')
     test_data_dir = os.path.join('data',dataset,'data', 'test')

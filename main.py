@@ -18,15 +18,20 @@ torch.manual_seed(0)
 
 def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, num_glob_iters,
          local_epochs, optimizer, numusers, K, personal_learning_rate, times, gpu):
-
+    time_list = []
     # Get device status: Check GPU or CPU
     device = torch.device("cuda:{}".format(gpu) if torch.cuda.is_available() and gpu != -1 else "cpu")
 
-    # added by zp
-    start_time = time.time()
+    # added by ZibaP
+    time_list = []
 
     for i in range(times):
         print("---------------Running time:------------",i)
+
+        # added by zp
+        start_time = time.time()
+
+
         # Generate model
         if(model == "mclr"):
             if(dataset == "Mnist"):
@@ -59,6 +64,12 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
         server.train()
         server.test()
 
+        # added by ZibaP
+        time_list.append(time.time()-start_time)
+
+    # added by ZibaP
+    print(f"\nAverage time cost: {round(np.average(time_list), 2)}s.")
+
 
     # averaging the results of one/several runs of RWSADMM algorithm
     average_data(num_users=numusers, loc_ep1=local_epochs, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
@@ -71,10 +82,10 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
 
 
     # added by zp
-    finish_time = time.time()
-    time_diff = finish_time - start_time
-    print("---------------------------------")
-    print("The elapsed duration is: ", "{:.2f}".format(time_diff), "seconds. \n")
+    # finish_time = time.time()
+    # time_diff = finish_time - start_time
+    # print("---------------------------------")
+    # print("The elapsed duration is: ", "{:.2f}".format(time_diff), "seconds. \n")
 
 
 if __name__ == "__main__":
@@ -82,16 +93,16 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", type=str, default="Cifar10", choices=["Mnist", "Synthetic", "Cifar10"])
     parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
-    parser.add_argument("--beta", type=float, default=1, help="Beta parameter for RWSADMM")
+    parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
     parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
-    parser.add_argument("--lamda", type=int, default=20, help="Regularization term")
-    parser.add_argument("--num_global_iters", type=int, default=100)
-    parser.add_argument("--local_epochs", type=int, default=5)
+    parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
+    parser.add_argument("--num_global_iters", type=int, default=200)
+    parser.add_argument("--local_epochs", type=int, default=10)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
-    parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
+    parser.add_argument("--markov_rw", type=int, default = 0, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
     parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
-    parser.add_argument("--K", type=int, default=5, help="Computation steps")
+    parser.add_argument("--K", type=int, default=5, help="Personalized Computation steps")
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
     parser.add_argument("--times", type=int, default=1, help="running time")
     parser.add_argument("--gpu", type=int, default=0, help="Which GPU to run the experiments, -1 mean CPU, 0,1,2 for GPU")
