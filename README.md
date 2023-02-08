@@ -8,4 +8,4 @@ There exists a graph of clients which collaboratetively train a global model. Tr
 There are two main hyperparameters named "beta" and "kappa" which require proper values to obtain optimal performance for RWSADMM. 
 
 
-This code is part of an ongiong research and the paper is not accepted yet. Please do not use thid code yet. In the case of need for benchmark packages refer to https://github.com/CharlieDinh/pFedMe. 
+This code is part of an ongiong research and the paper is not accepted yet. Please do not use this code in any ways yet. In the case of need for benchmark packages refer to https://github.com/CharlieDinh/pFedMe. 
