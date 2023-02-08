@@ -6,3 +6,6 @@ Data heterogeneity in Federated Learning frameworks is addressed in this package
 There exists a graph of clients which collaboratetively train a global model. Training is performed locally on clients and aggregation is carried out by a mobilized central server. User can switch between simple random selection of clients and random walk Markov chain by setting the value of parameter "markov_rw" to 0 or 1, respectively. 
 
 There are two main hyperparameters named "beta" and "kappa" which require proper values to obtain optimal performance for RWSADMM. 
+
+
+This code is part of an ongiong research and the paper is not accepted yet. Please do not use thid code yet. In the case of need for benchmark packages refer to https://github.com/CharlieDinh/pFedMe. 
