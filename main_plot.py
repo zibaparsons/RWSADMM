@@ -23,7 +23,7 @@ if(1): # plot for MNIST convex
     personal_learning_rate = [0.01,0.01,0.1,0.1]
     algorithms = ["RWSADMM","RWSADMM_p"]
     plot_summary_one_figure_mnist_Compare(num_users=numusers, loc_ep1=local_ep, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
-                                          beta=learning_rate, beta = beta, algorithms_list=algorithms, batch_size=batch_size, dataset=dataset, k = K, personal_learning_rate = personal_learning_rate)
+                                          kappa=learning_rate, kappa= beta, algorithms_list=algorithms, batch_size=batch_size, dataset=dataset, k = K, personal_learning_rate = personal_learning_rate)
 
 if(0): # plot for Synthetic covex
     numusers = 20

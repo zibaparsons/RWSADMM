@@ -62,7 +62,7 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
 
     # averaging the results of one/several runs of RWSADMM algorithm
     average_data(num_users=numusers, loc_ep1=local_epochs, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
-                 beta=beta, kappa=kappa, algorithms="RWSADMM", batch_size=batch_size, dataset=dataset,
+                 kappa=beta, kappa=kappa, algorithms="RWSADMM", batch_size=batch_size, dataset=dataset,
                  k=K, personal_learning_rate=personal_learning_rate, times=times)
     # averaging the results of one/several runs of RWSADMM_p algorithm
     # average_data(num_users=numusers, loc_ep1=local_epochs, Numb_Glob_Iters=num_glob_iters, lamb=lamda,
@@ -79,13 +79,13 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="Mnist", choices=["Mnist", "Synthetic", "Cifar10"])
+    parser.add_argument("--dataset", type=str, default="Cifar10", choices=["Mnist", "Synthetic", "Cifar10"])
     parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
     parser.add_argument("--beta", type=float, default=10, help="Beta parameter for RWSADMM")
     parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
     parser.add_argument("--lamda", type=int, default=20, help="Regularization term")
-    parser.add_argument("--num_global_iters", type=int, default=200)
+    parser.add_argument("--num_global_iters", type=int, default=20)
     parser.add_argument("--local_epochs", type=int, default=3)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
