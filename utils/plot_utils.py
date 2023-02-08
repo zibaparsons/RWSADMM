@@ -751,6 +751,6 @@ def plot_summary_one_figure_mnist_Kappa(num_users, loc_ep1, Numb_Glob_Iters, lam
     plt.xlabel('Global rounds')
     # plt.ylim([0.84,  0.985]) # non convex-case
     plt.ylim([0.88,  0.946]) # Convex-case
-    plt.savefig(dataset.upper() + "Convex_Mnist_test_Kappaa.pdf", bbox_inches="tight")
+    plt.savefig(dataset.upper() + "Convex_Mnist_test_Kappa.pdf", bbox_inches="tight")
     #plt.savefig(dataset.upper() + "Non_Convex_Mnist_test_Kappa.pdf", bbox_inches="tight")
     plt.close()
