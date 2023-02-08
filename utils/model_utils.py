@@ -76,7 +76,7 @@ def get_batch_sample(data, batch_size):
     batched_y = data_y[0:batch_size]
     return (batched_x, batched_y)
 
-def read_cifa_data():
+def read_cifar_data():
     transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,download=True, transform=transform)
@@ -92,7 +92,7 @@ def read_cifa_data():
     random.seed(1)
     np.random.seed(1)
     NUM_USERS = 20 # should be muitiple of 10
-    NUM_LABELS = 3
+    NUM_LABELS = 2
     # Setup directory for train/test data
     train_path = './data/train/cifa_train_100.json'
     test_path = './data/test/cifa_test_100.json'
@@ -256,7 +256,7 @@ def read_data(dataset):
     '''
 
     if(dataset == "Cifar10"):
-        clients, groups, train_data, test_data = read_cifa_data()
+        clients, groups, train_data, test_data = read_cifar_data()
         return clients, groups, train_data, test_data
 
     train_data_dir = os.path.join('data',dataset,'data', 'train')
