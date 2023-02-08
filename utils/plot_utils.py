@@ -8,7 +8,7 @@ plt.rcParams.update({'font.size': 14})
 
 def simple_read_data(alg):
     print(alg)
-    hf = h5py.File("./results/h5files/"+'{}.h5'.format(alg), 'r')
+    hf = h5py.File("./results/"+'{}.h5'.format(alg), 'r')
     rs_glob_acc = np.array(hf.get('rs_glob_acc')[:])
     rs_train_acc = np.array(hf.get('rs_train_acc')[:])
     rs_train_loss = np.array(hf.get('rs_train_loss')[:])
@@ -81,7 +81,7 @@ def average_data(num_users=100, loc_ep1=5, Numb_Glob_Iters=10, lamb="", beta="",
         alg = alg + "_" + str(k) + "_" + str(personal_learning_rate)
     alg = alg + "_" + "avg"
     if (len(glob_acc) != 0 &  len(train_acc) & len(train_loss)) :
-        with h5py.File("./results/h5files/"+'{}.h5'.format(alg,loc_ep1), 'w') as hf:
+        with h5py.File("./results/"+'{}.h5'.format(alg,loc_ep1), 'w') as hf:
             hf.create_dataset('rs_glob_acc', data=glob_acc_data)
             hf.create_dataset('rs_train_acc', data=train_acc_data)
             hf.create_dataset('rs_train_loss', data=train_loss_data)
