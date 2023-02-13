@@ -17,6 +17,7 @@ class RWSADMM(Server):
         # Initialize data for all  users
         data = read_data(dataset)
         self.total_users = len(data[0])
+        self.num_users = num_users # added for dynamic graph update in train method
         self.K = K
         self.personal_learning_rate = personal_learning_rate
         self.G = self.graph_users(self.total_users, num_users)
@@ -77,6 +78,9 @@ class RWSADMM(Server):
             # print("---------------------------------")
             # print("The elapsed duration for 1 iteration is: ", "{:.2f}".format(diff_2), "seconds. \n")
 
+            # dynamic graph update
+            if (glob_iter>0 & glob_iter % 10 == 0):
+                self.G = self.graph_users(self.total_users, self.num_users)
         #print(loss)
         self.save_results()
         self.save_model()

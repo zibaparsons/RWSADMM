@@ -100,9 +100,9 @@ if __name__ == "__main__":
     parser.add_argument("--local_epochs", type=int, default=10)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
-    parser.add_argument("--markov_rw", type=int, default = 0, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
+    parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
     parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
-    parser.add_argument("--K", type=int, default=5, help="Personalized Computation steps")
+    parser.add_argument("--K", type=int, default=5, help="Personalized Computation steps") # higher number more personalization
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
     parser.add_argument("--times", type=int, default=1, help="running time")
     parser.add_argument("--gpu", type=int, default=0, help="Which GPU to run the experiments, -1 mean CPU, 0,1,2 for GPU")
@@ -114,9 +114,12 @@ if __name__ == "__main__":
     print("Batch size: {}".format(args.batch_size))
     print("Beta parameter       : {}".format(args.beta))
     print("Kappa parameter       : {}".format(args.kappa))
+    print("Lambda parameter      : {}".format(args.lamda))
     print("Subset of users      : {}".format(args.numusers))
     print("Number of global rounds       : {}".format(args.num_global_iters))
     print("Number of local rounds       : {}".format(args.local_epochs))
+    print("K steps         : {}".format(args.K))
+    print("Personalized learning rate   : {}".format(args.personal_learning_rate))
     print("Dataset       : {}".format(args.dataset))
     print("Local Model       : {}".format(args.model))
     print("=" * 80)
