@@ -97,7 +97,7 @@ if __name__ == "__main__":
     parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
     parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
     parser.add_argument("--num_global_iters", type=int, default=200)
-    parser.add_argument("--local_epochs", type=int, default=10)
+    parser.add_argument("--local_epochs", type=int, default=5)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
     parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
