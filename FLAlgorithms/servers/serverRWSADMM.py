@@ -22,7 +22,7 @@ class RWSADMM(Server):
         self.personal_learning_rate = personal_learning_rate
         self.G = self.graph_users(self.total_users, num_users)
         self.markov_rw = markov_rw # settings to apply random walk MC or simple random selection
-
+        self.graph_update_frequency = 10
         for i in range(self.total_users):
             id, train , test = read_user_data(i, data, dataset)
             user = UserRWSADMM(device, id, train, test, model, batch_size, beta, kappa, lamda, local_epochs, optimizer, K, personal_learning_rate)
@@ -79,7 +79,7 @@ class RWSADMM(Server):
             # print("The elapsed duration for 1 iteration is: ", "{:.2f}".format(diff_2), "seconds. \n")
 
             # dynamic graph update
-            if (glob_iter>0 & glob_iter % 10 == 0):
+            if (glob_iter>0 & (glob_iter%self.graph_update_frequency)==0):
                 self.G = self.graph_users(self.total_users, self.num_users)
         #print(loss)
         self.save_results()
