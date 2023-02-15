@@ -94,7 +94,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
     parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
-    parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
+    parser.add_argument("--kappa", type=float, default=0.0001, help="Kappa parameter for RWSADMM")
     parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
     parser.add_argument("--num_global_iters", type=int, default=200)
     parser.add_argument("--local_epochs", type=int, default=5)
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
     parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
     parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
-    parser.add_argument("--K", type=int, default=5, help="Personalized Computation steps") # higher number more personalization
+    parser.add_argument("--K", type=int, default=3, help="Personalized Computation steps") # higher number more personalization
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
     parser.add_argument("--times", type=int, default=1, help="running time")
     parser.add_argument("--gpu", type=int, default=0, help="Which GPU to run the experiments, -1 mean CPU, 0,1,2 for GPU")
