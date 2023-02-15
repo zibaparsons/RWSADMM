@@ -93,7 +93,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", type=str, default="Cifar10", choices=["Mnist", "Synthetic", "Cifar10"])
     parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
-    parser.add_argument("--beta", type=float, default=1000, help="Beta parameter for RWSADMM")
+    parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
     parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
     parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
     parser.add_argument("--num_global_iters", type=int, default=200)

@@ -237,9 +237,9 @@ class Server:
         self.rs_train_acc_per.append(train_acc)
         self.rs_train_loss_per.append(train_loss)
         #print("stats_train[1]",stats_train[3][0])
-        print("Average Personal Accurancy: ", glob_acc)
-        print("Average Personal Trainning Accurancy: ", train_acc)
-        print("Average Personal Trainning Loss: ",train_loss)
+        print("Average Personal Accuraccy: ", glob_acc)
+        print("Average Personal Training Accuracy: ", train_acc)
+        print("Average Personal Training Loss: ",train_loss)
 
     def evaluate_one_step(self):
         for c in self.users:
@@ -260,6 +260,6 @@ class Server:
         self.rs_train_acc_per.append(train_acc)
         self.rs_train_loss_per.append(train_loss)
         #print("stats_train[1]",stats_train[3][0])
-        print("Average Personal Accurancy: ", glob_acc)
-        print("Average Personal Trainning Accurancy: ", train_acc)
-        print("Average Personal Trainning Loss: ",train_loss)
+        print("Average Personal Accuracy: ", glob_acc)
+        print("Average Personal Training Accuracy: ", train_acc)
+        print("Average Personal Training Loss: ",train_loss)
