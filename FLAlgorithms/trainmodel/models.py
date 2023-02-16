@@ -8,7 +8,7 @@ class MiniFedAvgCNN(nn.Module):
         super().__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_features,
-                      32,
+                      16,
                       kernel_size=5,
                       padding=0,
                       stride=1,
@@ -17,8 +17,8 @@ class MiniFedAvgCNN(nn.Module):
             nn.MaxPool2d(kernel_size=(2, 2))
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(32,
-                      64,
+            nn.Conv2d(16,
+                      32,
                       kernel_size=3,
                       padding=0,
                       stride=1,
@@ -27,12 +27,12 @@ class MiniFedAvgCNN(nn.Module):
             nn.MaxPool2d(kernel_size=(2, 2))
         )
         self.fc1 = nn.Sequential(
-            nn.Linear(dim, 128), # size is shrinked from 512 to 128
+            nn.Linear(dim, 64), # size is shrinked from 512 to 128
             nn.ReLU(inplace=True)
         )
         # Edited by ZibaP
         # self.fc = nn.Linear(128, num_classes)
-        self.fc = nn.Sequential(nn.Linear(128,num_classes), nn.Softmax(inplace=True))
+        self.fc = nn.Sequential(nn.Linear(64,num_classes), nn.Softmax(dim=1))
 
     def forward(self, x):
         out = self.conv1(x)

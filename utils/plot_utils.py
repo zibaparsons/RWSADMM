@@ -99,7 +99,7 @@ def plot_summary_one_figure(num_users=100, loc_ep1=5, Numb_Glob_Iters=10, lamb=[
     train_acc = average_smooth(train_acc_, window='flat')
 
     #glob_acc, train_acc, train_loss = get_training_data_value( num_users, loc_ep1, Numb_Glob_Iters, lamb, beta, kappa, algorithms_list, batch_size, dataset, k, personal_learning_rate )
-    print("max value of test accurancy",glob_acc.max())
+    print("max value of test accuracy",glob_acc.max())
     plt.figure(1,figsize=(5, 5))
     MIN = train_loss.min() - 0.001
     start = 0
@@ -150,10 +150,11 @@ def get_max_value_index(num_users=100, loc_ep1=5, Numb_Glob_Iters=10, lamb=[], b
 
 def get_label_name(name): # modified by zp
     if name.startswith("RWSADMM"):
-        if name.startswith("RWSADMM_p"):
-            return "RWSADMM"+ " (PM)"
-        else:
-            return "RWSADMM"+ " (GM)"
+        # if name.startswith("RWSADMM_p"):
+        #     return "RWSADMM"+ " (PM)"
+        # else:
+        #     return "RWSADMM"+ " (GM)"
+        return "RWSADMM"
 
 
 def average_smooth(data, window_len=20, window='hanning'):
@@ -180,7 +181,7 @@ def plot_summary_one_figure_cifar10_Compare(num_users, loc_ep1, Numb_Glob_Iters,
     dataset = dataset
     glob_acc_, train_acc_, train_loss_ = get_training_data_value(num_users, loc_ep1, Numb_Glob_Iters, lamb, beta, kappa, algorithms_list, batch_size, dataset, k, personal_learning_rate)
     for i in range(Numb_Algs):
-        print("max accurancy:", train_acc_[i].max())
+        print("max accuracy:", train_acc_[i].max())
     glob_acc =  average_smooth(glob_acc_, window='flat')
     train_loss = average_smooth(train_loss_, window='flat')
     train_acc = average_smooth(train_acc_, window='flat')
@@ -223,6 +224,59 @@ def plot_summary_one_figure_cifar10_Compare(num_users, loc_ep1, Numb_Glob_Iters,
     plt.ylim([0.1, 0.9])  # convex
     #plt.savefig(dataset.upper() + "Non_Convex_Syn_test_Com.pdf", bbox_inches="tight")
     plt.savefig(dataset.upper() + "_Convex_Cif_test_Com.pdf", bbox_inches="tight")
+    plt.close()
+
+# beta tuning figure
+def plot_summary_one_figure_Beta(num_users, loc_ep1, Numb_Glob_Iters, lamb, beta, kappa, algorithms_list,
+                                        batch_size, dataset, k, personal_learning_rate, model_str):
+    Numb_Algs = len(algorithms_list)
+    dataset = dataset
+    glob_acc_, train_acc_, train_loss_ = get_training_data_value(num_users, loc_ep1, Numb_Glob_Iters, lamb,
+                                                                 beta, kappa, algorithms_list, batch_size,
+                                                                 dataset, k, personal_learning_rate)
+
+    glob_acc = average_smooth(glob_acc_, window='flat')
+    train_loss = average_smooth(train_loss_, window='flat')
+    train_acc = average_smooth(train_acc_, window='flat')
+
+    linestyles = ['-', '-', '-', '-.', '-.', '-.']
+    print(lamb)
+    colors = ['tab:blue', 'tab:green', 'r', 'c', 'darkorange', 'tab:brown', 'w']
+    markers = ["o", "v", "s", "*", "x", "P"]
+    plt.figure(1, figsize=(5, 5))
+    plt.title(model_str)
+
+    for i in range(Numb_Algs):
+        label = get_label_name(algorithms_list[i])
+        plt.plot(train_loss[i, 1:], label=label + ": "
+                                                  r'$\beta = $' + str(beta[i]), linewidth=1, color=colors[i],
+                 marker=markers[i], markevery=0.05, markersize=5)
+
+
+    plt.legend(loc='upper right')
+    plt.ylabel('Training Loss')
+    plt.xlabel('Global rounds')
+    # plt.ylim([train_loss.min() - 0.01, 2])
+    plt.ylim([0.1,  180])
+    plt.savefig(dataset.upper() + "_" + model_str + "_train_loss_fixKappa.pdf", bbox_inches="tight")
+
+    plt.figure(2, figsize=(5, 5))
+    plt.title(model_str)
+
+    # Global accuracy
+    for i in range(Numb_Algs):
+        label = get_label_name(algorithms_list[i])
+        plt.plot(glob_acc[i, 1:], label=label + ": "
+                                                r'$\beta = $' + str(beta[i]), linewidth=1, color=colors[i],
+                 marker=markers[i], markevery=0.05, markersize=5)
+
+    plt.legend(loc='lower right')
+    plt.ylabel('Test Accuracy')
+    plt.xlabel('Global rounds')
+    plt.ylim([0.6, 0.86])
+    # plt.ylim([0.89,  0.945])
+    plt.savefig(dataset.upper() + "_" +model_str + "_test_accuracy_fixKappa.pdf", bbox_inches="tight")
+    # plt.savefig(dataset.upper() + "Convex_Syn_fixR.pdf", bbox_inches="tight")
     plt.close()
 
 
@@ -754,3 +808,7 @@ def plot_summary_one_figure_mnist_Kappa(num_users, loc_ep1, Numb_Glob_Iters, lam
     plt.savefig(dataset.upper() + "Convex_Mnist_test_Kappa.pdf", bbox_inches="tight")
     #plt.savefig(dataset.upper() + "Non_Convex_Mnist_test_Kappa.pdf", bbox_inches="tight")
     plt.close()
+
+
+
+##################################### Cifar10 #############################################

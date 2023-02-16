@@ -40,12 +40,21 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
                 model = Mclr_Logistic(3072,10).to(device), model #added by zp
             else:
                 model = Mclr_Logistic(60,10).to(device), model
-        if(model == "cnn"):
-            if(dataset == "Mnist"):
-                model = Net().to(device), model
-            elif(dataset == "Cifar10"):
-                # model = CNNCifar(10).to(device), model
-                model = CifarNet().to(device), model
+        # if(model == "cnn"):
+        #     if(dataset == "Mnist"):
+        #         model = Net().to(device), model
+        #     elif(dataset == "Cifar10"):
+        #         # model = CNNCifar(10).to(device), model
+        #         model = CifarNet().to(device), model
+        # Added by ZibaP
+        elif model == "cnn":
+            if dataset == "Mnist":
+                model = MiniFedAvgCNN(in_features=1, num_classes= 10, dim=1024).to(device), model
+            elif dataset == "Cifar10":
+                model = MiniFedAvgCNN(in_features=3, num_classes=10, dim=1600).to(device), model
+            else:
+                model = MiniFedAvgCNN(in_features=3, num_classes=10, dim=10816).to(device), model
+
         if(model == "dnn"):
             if(dataset == "Mnist"):
                 model = DNN().to(device), model
@@ -87,14 +96,14 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
     # print("---------------------------------")
     # print("The elapsed duration is: ", "{:.2f}".format(time_diff), "seconds. \n")
 
-
+# best setting for Cifar10 beta=100 kappa=0.0001
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="Cifar10", choices=["Mnist", "Synthetic", "Cifar10"])
-    parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
+    parser.add_argument("--dataset", type=str, default="Mnist", choices=["Mnist", "Synthetic", "Cifar10"])
+    parser.add_argument("--model", type=str, default="cnn", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
     parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
-    parser.add_argument("--kappa", type=float, default=0.0001, help="Kappa parameter for RWSADMM")
+    parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
     parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
     parser.add_argument("--num_global_iters", type=int, default=200)
     parser.add_argument("--local_epochs", type=int, default=5)
