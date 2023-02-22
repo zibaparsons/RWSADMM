@@ -40,20 +40,21 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
                 model = Mclr_Logistic(3072,10).to(device), model #added by zp
             else:
                 model = Mclr_Logistic(60,10).to(device), model
-        # if(model == "cnn"):
-        #     if(dataset == "Mnist"):
-        #         model = Net().to(device), model
-        #     elif(dataset == "Cifar10"):
-        #         # model = CNNCifar(10).to(device), model
-        #         model = CifarNet().to(device), model
-        # Added by ZibaP
-        elif model == "cnn":
-            if dataset == "Mnist":
-                model = MiniFedAvgCNN(in_features=1, num_classes= 10, dim=1024).to(device), model
-            elif dataset == "Cifar10":
-                model = MiniFedAvgCNN(in_features=3, num_classes=10, dim=1600).to(device), model
-            else:
-                model = MiniFedAvgCNN(in_features=3, num_classes=10, dim=10816).to(device), model
+
+        if(model == "cnn"):
+            if(dataset == "Mnist"):
+                model = Net().to(device), model
+            elif(dataset == "Cifar10"):
+                # model = CNNCifar(10).to(device), model
+                model = CifarNet().to(device), model
+
+        # if model == "cnn":
+        #     if dataset == "Mnist":
+        #         model = MiniFedAvgCNN(in_features=1, num_classes=10, dim=1024).to(device), model
+        #     elif dataset == "Cifar10":
+        #         model = FedAvgCNN(in_features=3, num_classes=10, dim=1600).to(device), model
+        #     else:
+        #         model = FedAvgCNN(in_features=3, num_classes=10, dim=10816).to(device), model
 
         if(model == "dnn"):
             if(dataset == "Mnist"):
@@ -96,7 +97,14 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
     # print("---------------------------------")
     # print("The elapsed duration is: ", "{:.2f}".format(time_diff), "seconds. \n")
 
-# best setting for Cifar10 beta=100 kappa=0.0001
+# best setting for Cifar10 beta=100 kappa=0.0001, K=3
+
+# best setting for Mnist for now beta=100 and kappa=0.001
+# beta=10 kappa=0.01 was not good; neither beta=1000 kappa=0.001;
+# beta=100 kappa=0.01 is not as good as the best
+# with beta=10 and kappa=0.001, i got 98.28%
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default="Mnist", choices=["Mnist", "Synthetic", "Cifar10"])
@@ -104,13 +112,13 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=20)
     parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
     parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
-    parser.add_argument("--lamda", type=int, default=30, help="Regularization term")
-    parser.add_argument("--num_global_iters", type=int, default=200)
-    parser.add_argument("--local_epochs", type=int, default=5)
+    parser.add_argument("--lamda", type=int, default=20, help="Regularization term")
+    parser.add_argument("--num_global_iters", type=int, default=100)
+    parser.add_argument("--local_epochs", type=int, default=10)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
-    parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
-    parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
+    parser.add_argument("--markov_rw", type=int, default = 0, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
+    parser.add_argument("--numusers", type=int, default=3, help="Number of Users per round")
     parser.add_argument("--K", type=int, default=3, help="Personalized Computation steps") # higher number more personalization
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
     parser.add_argument("--times", type=int, default=1, help="running time")

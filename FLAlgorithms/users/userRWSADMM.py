@@ -59,12 +59,12 @@ class UserRWSADMM(User):
                     param_z.data = param_z.data + self.kappa*self.beta * (param_x.data - param_y.data - eps)
                     param_y.data = param_y.data + 1 / num_users * (
                             param_x.data - (1/self.beta)*param_z.data - param_x_old.data + (1/self.beta)*param_z_old.data)
-            self.kappa = 0.99 * self.kappa
+            self.kappa = 0.95 * self.kappa
             persionalized_model_bar = copy.copy(self.local_model_x)
 
             # update local weight after finding approximate theta
             for new_param, localweight in zip(persionalized_model_bar.parameters(), self.local_model_x.parameters()):
-                localweight.data = localweight.data - self.lamda * (1/self.beta) * (localweight.data - new_param.data)
+                localweight.data = localweight.data - (self.lamda/self.beta) * (localweight.data - new_param.data)
 
         #update local model as local_weight_upated
         self.update_parameters(self.local_model_x.parameters())

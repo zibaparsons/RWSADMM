@@ -2,37 +2,34 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Added by ZibaP
-class MiniFedAvgCNN(nn.Module):
+class FedAvgCNN(nn.Module):
     def __init__(self, in_features=1, num_classes=10, dim=1024):
-        super().__init__()
+        super(FedAvgCNN, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_features,
-                      16,
-                      kernel_size=5,
-                      padding=0,
-                      stride=1,
-                      bias=True),
+                        32,
+                        kernel_size=5,
+                        padding=0,
+                        stride=1,
+                        bias=True),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=(2, 2))
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(16,
-                      32,
-                      kernel_size=3,
-                      padding=0,
-                      stride=1,
-                      bias=True),
+            nn.Conv2d(32,
+                        64,
+                        kernel_size=5,
+                        padding=0,
+                        stride=1,
+                        bias=True),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=(2, 2))
         )
         self.fc1 = nn.Sequential(
-            nn.Linear(dim, 64), # size is shrinked from 512 to 128
+            nn.Linear(dim, 512),
             nn.ReLU(inplace=True)
         )
-        # Edited by ZibaP
-        # self.fc = nn.Linear(128, num_classes)
-        self.fc = nn.Sequential(nn.Linear(64,num_classes), nn.Softmax(dim=1))
+        self.fc = nn.Linear(512, num_classes)
 
     def forward(self, x):
         out = self.conv1(x)
@@ -44,16 +41,81 @@ class MiniFedAvgCNN(nn.Module):
 
 # ====================================================================================================================
 
+# Added by ZibaP
+class MiniFedAvgCNN(nn.Module):
+    def __init__(self, in_features=1, num_classes=10, dim=1024):
+        super(MiniFedAvgCNN, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_features,
+                        16,
+                        kernel_size=5,
+                        padding=0,
+                        stride=1,
+                        bias=True),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=(2, 2))
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(16,
+                        32,
+                        kernel_size=5,
+                        padding=0,
+                        stride=1,
+                        bias=True),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=(2, 2))
+        )
+        self.fc1 = nn.Sequential(
+            nn.Linear(4*4*32, 128), # 512
+            nn.ReLU(inplace=True)
+        )
+        self.fc = nn.Linear(128, num_classes)
 
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.conv2(out)
+        out = torch.flatten(out, 1)
+        out = self.fc1(out)
+        out = self.fc(out)
+        return out
+
+# ====================================================================================================================
+class MiniNet(nn.Module):
+    def __init__(self):
+        super(MiniNet, self).__init__()
+        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.conv2 = nn.Conv2d(6, 16, 3)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(16*5*5, 100)
+        self.fc2 = nn.Linear(100, 10)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 2)(x)
+        x = self.dropout1(x)
+        x = self.conv2(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2)(x)
+        x = self.dropout2(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = nn.ReLU()(x)
+        output = self.fc2(x)
+        # output = F.log_softmax(x, dim=1)
+        return output
+
+# ====================================================================================================================
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 2, 1)
-        self.conv2 = nn.Conv2d(16, 32, 2, 1)
+        self.conv1 = nn.Conv2d(1, 16, 3, 1)#2
+        self.conv2 = nn.Conv2d(16, 32, 3, 1)#2
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(18432, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.fc1 = nn.Linear(22*22*32, 512) # 18432 = 24*24*32
+        self.fc2 = nn.Linear(512, 10)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -70,6 +132,7 @@ class Net(nn.Module):
         x = self.fc2(x)
         output = F.log_softmax(x, dim=1)
         return output
+# ====================================================================================================================
 
 class Mclr_Logistic(nn.Module):
     def __init__(self, input_dim = 784, output_dim = 10):
