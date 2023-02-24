@@ -110,11 +110,11 @@ class MiniNet(nn.Module):
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 3, 1)#2
+        self.conv1 = nn.Conv2d(1, 16, 5, 1)#2
         self.conv2 = nn.Conv2d(16, 32, 3, 1)#2
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(22*22*32, 512) # 18432 = 24*24*32
+        self.fc1 = nn.Linear(20*20*32, 512) # 18432 = 24*24*32
         self.fc2 = nn.Linear(512, 10)
 
     def forward(self, x):

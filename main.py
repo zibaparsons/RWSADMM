@@ -118,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
     parser.add_argument("--markov_rw", type=int, default = 0, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
-    parser.add_argument("--numusers", type=int, default=3, help="Number of Users per round")
+    parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
     parser.add_argument("--K", type=int, default=3, help="Personalized Computation steps") # higher number more personalization
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
     parser.add_argument("--times", type=int, default=1, help="running time")
