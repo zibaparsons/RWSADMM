@@ -108,7 +108,7 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default="Mnist", choices=["Mnist", "Synthetic", "Cifar10"])
-    parser.add_argument("--model", type=str, default="cnn", choices=["dnn", "mclr", "cnn","resnet"])
+    parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
     parser.add_argument("--batch_size", type=int, default=20)
     parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
     parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
