@@ -15,13 +15,51 @@ import torch.nn as nn
 import time
 torch.manual_seed(0)
 
+torch.cuda.empty_cache()
+# import gc
+# del vars
+# gc.collect()
+# # The flag below controls whether to allow TF32 on matmul. This flag defaults to False
+# # in PyTorch 1.12 and later.
+# torch.backends.cuda.matmul.allow_tf32 = True
+# # The flag below controls whether to allow TF32 on cuDNN. This flag defaults to True.
+# torch.backends.cudnn.allow_tf32 = True
+
+# torch.backends.cuda.matmul.allow_tf32 = False
+# torch.backends.cudnn.allow_tf32 = False
+# import os
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:<enter-size-here>"
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
+
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"]="max_split_size_mb:100"
+
+# clearing gpu cache 
+# from GPUtil import showUtilization as gpu_usage
+# from numba import cuda
+
+# def free_gpu_cache():
+#     print("Initial GPU Usage")
+#     gpu_usage()                             
+
+#     torch.cuda.empty_cache()
+
+#     cuda.select_device(0)
+#     cuda.close()
+#     cuda.select_device(0)
+
+#     print("GPU Usage after emptying the cache")
+#     gpu_usage()
+
+# free_gpu_cache()  
+
+
 
 def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, num_glob_iters,
          local_epochs, optimizer, numusers, K, personal_learning_rate, times, gpu):
-    time_list = []
+    # time_list = []
     # Get device status: Check GPU or CPU
     device = torch.device("cuda:{}".format(gpu) if torch.cuda.is_available() and gpu != -1 else "cpu")
-
+    # device = "cpu"
     # added by ZibaP
     time_list = []
 
@@ -46,7 +84,23 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
                 model = Net().to(device), model
             elif(dataset == "Cifar10"):
                 # model = CNNCifar(10).to(device), model
-                model = CifarNet().to(device), model
+                # model = CifarNet().to(device), model
+                model = Net().to(device), model
+
+        if(model == "largerCNN"):
+            if(dataset == "Mnist"):
+                model = largerNet().to(device), model
+            elif(dataset == "Cifar10"):
+                # model = CNNCifar(10).to(device), model
+                model = largerNet().to(device), model
+
+        if(model == "megaCNN"):
+            if(dataset == "Mnist"):
+                model = megaNet().to(device), model
+            elif(dataset == "Cifar10"):
+                # model = CNNCifar(10).to(device), model
+                model = megaNet().to(device), model
+
 
         # if model == "cnn":
         #     if dataset == "Mnist":
@@ -63,11 +117,21 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
                 model = DNN(3072,50, 10).to(device), model # Added by zp 1024*100
             else: 
                 model = DNN(60,20,10).to(device), model
+
         if(model == "resnet"): #added by zp
             net = models.resnet18(pretrained=True) #models is from torchvision library
             numFtrs = net.fc.in_features
             net.fc = nn.Linear(numFtrs, 10)
             model = net, model
+
+        if(model == "alexnet"): #added by zibap 3/17/2023
+            net = models.AlexNet(num_classes=10, dropout=0.5) #number of classes = 10
+            # net = torch.hub.load('pytorch/vision:v0.10.0', 'alexnet',pretrained=True)
+            # numFtrs = net.fc.in_features
+            # net.fc = nn.Linear(numFtrs, 10)
+            net.classifier[6] = nn.Linear(4096,10)
+            model = net.to(device), model
+
 
         # initializing, training and testing the model
         server = RWSADMM(device, dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, num_glob_iters, local_epochs, optimizer, numusers, K, personal_learning_rate, i)
@@ -107,22 +171,22 @@ def main(dataset, algorithm, markov_rw, model, batch_size, beta, kappa, lamda, n
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="Mnist", choices=["Mnist", "Synthetic", "Cifar10"])
-    parser.add_argument("--model", type=str, default="mclr", choices=["dnn", "mclr", "cnn","resnet"])
+    parser.add_argument("--dataset", type=str, default="Cifar10", choices=["Mnist", "Synthetic", "Cifar10"])
+    parser.add_argument("--model", type=str, default="megaCNN", choices=["dnn", "mclr", "cnn","largerCNN","resnet","alexnet"])
     parser.add_argument("--batch_size", type=int, default=20)
-    parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM")
-    parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM")
+    parser.add_argument("--beta", type=float, default=100, help="Beta parameter for RWSADMM") # optimal value was 100
+    parser.add_argument("--kappa", type=float, default=0.001, help="Kappa parameter for RWSADMM") # optimal value was 0.001
     parser.add_argument("--lamda", type=int, default=20, help="Regularization term")
-    parser.add_argument("--num_global_iters", type=int, default=100)
-    parser.add_argument("--local_epochs", type=int, default=10)
+    parser.add_argument("--num_global_iters", type=int, default=200)
+    parser.add_argument("--local_epochs", type=int, default=20)
     parser.add_argument("--optimizer", type=str, default="SGD")
     parser.add_argument("--algorithm", type=str, default="RWSADMM")
-    parser.add_argument("--markov_rw", type=int, default = 0, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
-    parser.add_argument("--numusers", type=int, default=5, help="Number of Users per round")
-    parser.add_argument("--K", type=int, default=3, help="Personalized Computation steps") # higher number more personalization
+    parser.add_argument("--markov_rw", type=int, default = 1, choices=[1,0]) # 1 for random walk markov, 0 simple random selection
+    parser.add_argument("--numusers", type=int, default=10, help="Number of Users per round")
+    parser.add_argument("--K", type=int, default=5, help="Personalized Computation steps") # higher number more personalization
     parser.add_argument("--personal_learning_rate", type=float, default=0.01, help="Persionalized learning rate to caculate theta aproximately using K steps")
     parser.add_argument("--times", type=int, default=1, help="running time")
-    parser.add_argument("--gpu", type=int, default=0, help="Which GPU to run the experiments, -1 mean CPU, 0,1,2 for GPU")
+    parser.add_argument("--gpu", type=int, default=1, help="Which GPU to run the experiments, -1 mean CPU, 0,1,2 for GPU")
     args = parser.parse_args()
 
     print("=" * 80)
