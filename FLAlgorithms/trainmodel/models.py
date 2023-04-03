@@ -80,42 +80,163 @@ class MiniFedAvgCNN(nn.Module):
         return out
 
 # ====================================================================================================================
-class MiniNet(nn.Module):
+# class largerNet(nn.Module):
+#     def __init__(self):
+#         super(largerNet,self).__init__()
+#         self.conv1 = nn.Conv2d(3, 6, 5)
+#         self.pool = nn.MaxPool2d(2, 2)
+#         self.conv2 = nn.Conv2d(6, 16, 5)
+#         self.fc1 = nn.Linear(16 * 5 * 5, 120)
+#         self.fc2 = nn.Linear(120, 84)
+#         self.fc3 = nn.Linear(84, 10)
+
+#     def forward(self, x):
+#         x = self.pool(F.relu(self.conv1(x)))
+#         x = self.pool(F.relu(self.conv2(x)))
+#         x = torch.flatten(x, 1) # flatten all dimensions except batch
+#         x = F.relu(self.fc1(x))
+#         x = F.relu(self.fc2(x))
+#         x = self.fc3(x)
+#         return x
+
+class largerNet(nn.Module):
     def __init__(self):
-        super(MiniNet, self).__init__()
-        self.conv1 = nn.Conv2d(1, 6, 5)
-        self.conv2 = nn.Conv2d(6, 16, 3)
+        super(largerNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 8, 5, 1)#2
+        self.conv2 = nn.Conv2d(8, 12, 3, 1)#2
+        self.conv3 = nn.Conv2d(12, 16, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(16*5*5, 100)
-        self.fc2 = nn.Linear(100, 10)
-
+        self.dropout3 = nn.Dropout(0.5)
+        # self.fc1 = nn.Linear(22*22*32, 128) # 18432 = 24*24*32 #512
+        # self.fc1 = nn.Linear(24*24*30, 128) # 18432 = 24*24*32 #512
+        self.fc1 = nn.Linear(21*21*16, 64) # 18432 = 24*24*32 #512 #128
+        
+        # self.fc2 = nn.Linear(128, 24)
+        self.fc3 = nn.Linear(64, 10)
+    
     def forward(self, x):
         x = self.conv1(x)
         x = nn.ReLU()(x)
-        x = nn.MaxPool2d(2, 2)(x)
+        x = nn.MaxPool2d(2, 1)(x)
         x = self.dropout1(x)
         x = self.conv2(x)
         x = nn.ReLU()(x)
-        x = nn.MaxPool2d(2)(x)
+        x = nn.MaxPool2d(2, 1)(x)
         x = self.dropout2(x)
+        x = self.conv3(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout3(x)
         x = torch.flatten(x, 1)
         x = self.fc1(x)
         x = nn.ReLU()(x)
-        output = self.fc2(x)
-        # output = F.log_softmax(x, dim=1)
+        # x = self.fc2(x)
+        # x = nn.ReLU()(x)
+        x = self.fc3(x)
+        output = F.log_softmax(x, dim=1)
         return output
+
+# ====================================================================================================================
+
+class megaNet(nn.Module):
+    def __init__(self):
+        super(megaNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 8, 5, 1)#2
+        self.conv2 = nn.Conv2d(8, 12, 5, 1)#2
+        self.conv3 = nn.Conv2d(12, 16, 5, 1)
+        self.conv4 = nn.Conv2d(16, 20, 3, 1)
+        self.conv5 = nn.Conv2d(20, 24, 3, 1)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        # self.fc1 = nn.Linear(22*22*32, 128) # 18432 = 24*24*32 #512
+        # self.fc1 = nn.Linear(24*24*30, 128) # 18432 = 24*24*32 #512
+        # self.fc1 = nn.Linear(16*16*20, 32) # 5120 = 16*16*20 #64
+        # self.fc1 = nn.Linear(8*8*28, 32) # 1792 = 8*8*28 #64
+        self.fc1 = nn.Linear(11*11*24, 32) # 2904 = 11*11*24 #64
+        # self.fc2 = nn.Linear(128, 24)
+        self.fc3 = nn.Linear(32, 10)
+    
+    def forward(self, x):
+        x = self.conv1(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout1(x)
+        x = self.conv2(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout1(x)
+        x = self.conv3(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout1(x)
+        x = self.conv4(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout2(x)
+        x = self.conv5(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout2(x)
+        # x = self.conv6(x)
+        # x = nn.ReLU()(x)
+        # x = nn.MaxPool2d(2, 1)(x)
+        # x = self.dropout6(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = nn.ReLU()(x)
+        # x = self.fc2(x)
+        # x = nn.ReLU()(x)
+        x = self.fc3(x)
+        output = F.log_softmax(x, dim=1)
+        return output
+
+
+# ====================================================================================================================
+
+
+
+
+
+# ====================================================================================================================
+# class MiniNet(nn.Module):
+#     def __init__(self):
+#         super(MiniNet, self).__init__()
+#         self.conv1 = nn.Conv2d(1, 6, 5)
+#         self.conv2 = nn.Conv2d(6, 16, 3)
+#         self.dropout1 = nn.Dropout(0.25)
+#         self.dropout2 = nn.Dropout(0.5)
+#         self.fc1 = nn.Linear(16*5*5, 100)
+#         self.fc2 = nn.Linear(100, 10)
+
+#     def forward(self, x):
+#         x = self.conv1(x)
+#         x = nn.ReLU()(x)
+#         x = nn.MaxPool2d(2, 2)(x)
+#         x = self.dropout1(x)
+#         x = self.conv2(x)
+#         x = nn.ReLU()(x)
+#         x = nn.MaxPool2d(2)(x)
+#         x = self.dropout2(x)
+#         x = torch.flatten(x, 1)
+#         x = self.fc1(x)
+#         x = nn.ReLU()(x)
+#         output = self.fc2(x)
+#         # output = F.log_softmax(x, dim=1)
+#         return output
 
 # ====================================================================================================================
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 5, 1)#2
-        self.conv2 = nn.Conv2d(16, 32, 3, 1)#2
+        # self.conv1 = nn.Conv2d(1, 16, 5, 1)#2
+        self.conv1 = nn.Conv2d(3, 12, 5, 1)# for Cifar10
+        self.conv2 = nn.Conv2d(12, 20, 3, 1)#2
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(20*20*32, 512) # 18432 = 24*24*32
-        self.fc2 = nn.Linear(512, 10)
+        # self.fc1 = nn.Linear(20*20*24, 128) # 18432 = 24*24*32 #512
+        self.fc1 = nn.Linear(24*24*20, 128) # For Cifar10
+        self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -170,24 +291,24 @@ class DNN(nn.Module):
         x = F.log_softmax(x, dim=1)
         return x
 
-class CifarNet(nn.Module):
-    def __init__(self):
-        super(CifarNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+# class CifarNet(nn.Module):
+#     def __init__(self):
+#         super(CifarNet, self).__init__()
+#         self.conv1 = nn.Conv2d(3, 6, 5)
+#         self.pool = nn.MaxPool2d(2, 2)
+#         self.conv2 = nn.Conv2d(6, 16, 5)
+#         self.fc1 = nn.Linear(16 * 5 * 5, 120)
+#         self.fc2 = nn.Linear(120, 84)
+#         self.fc3 = nn.Linear(84, 10)
 
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return F.log_softmax(x, dim=1)
+#     def forward(self, x):
+#         x = self.pool(F.relu(self.conv1(x)))
+#         x = self.pool(F.relu(self.conv2(x)))
+#         x = x.view(-1, 16 * 5 * 5)
+#         x = F.relu(self.fc1(x))
+#         x = F.relu(self.fc2(x))
+#         x = self.fc3(x)
+#         return F.log_softmax(x, dim=1)
 
 #################################
 ##### Neural Network model #####
