@@ -1,5 +1,5 @@
 # RWSADMM
-Mobilizing Federated Networks via Random Walk Stochastic ADMM
+Mobilizing Personalized Federated Learning in Infrastructure-Less and Heterogeneous Environments via Random Walk Stochastic ADMM
 
 Data heterogeneity in Federated Learning frameworks is addressed in this package named RWSADMM. RWSADMM is personalized FL technique designed for situations where a consistent connection between the central server and all clients cannot be maintained, and data distribution is heterogeneous. To address these challenges, we focus on mobilizing the federated setting, where the server moves between groups of adjacent clients to learn local models.
 
