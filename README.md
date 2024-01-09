@@ -1,8 +1,7 @@
 # RWSADMM
 Mobilizing Personalized Federated Learning in Infrastructure-Less and Heterogeneous Environments via Random Walk Stochastic ADMM
 
-This code is part of a paper accepted to be presented at the Thirty-seventh Conference on Neural Information Processing Systems (NeurIPS 2023). Please do not use this code in any way yet. It can be cited once the corresponding paper is published. If you need the benchmark packages, you can refer to https://github.com/CharlieDinh/pFedMe. 
-
+This code is the source code for the paper titiled above, which is accepted and presented at the Thirty-seventh Conference on Neural Information Processing Systems (NeurIPS 2023). It can be cited once the corresponding paper is published. If you need the benchmark packages, you can refer to https://github.com/CharlieDinh/pFedMe. 
 
 Data heterogeneity in Federated Learning frameworks is addressed in this package named RWSADMM. RWSADMM is a personalized FL technique designed for situations where a consistent connection between the central server and all clients cannot be maintained, and data distribution is heterogeneous. To address these challenges, we focus on mobilizing the federated setting, where the server moves between groups of adjacent clients to learn local models.
 
