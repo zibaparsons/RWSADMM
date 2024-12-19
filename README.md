@@ -14,5 +14,5 @@ There are two primary hyperparameters named "beta" and "kappa" which require pro
 
 DataSets:
 
-The datasets need to be generated using the codes in the data folder. Three folders inside the data folder contain codes for generating MNIST, Cifar10, and Synthetic datasets. 
-The data is also benchmarked in the reference GitHub package: https://github.com/CharlieDinh/pFedMe. 
+The datasets need to be generated using the codes in the data folder. Three folders inside the data folder contain codes for generating MNIST, Cifar10, and a Synthetic datasets. 
+
